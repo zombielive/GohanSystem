@@ -30,6 +30,7 @@ class StudentController extends Controller {
     		$user->where('cardnum='.$cardnum)->save($dataU);
     		$dataR['uid'] = session('id');
     		$dataR['money'] = -$amount;
+    		$dataR['rest'] = $afterPay;
     		$dataR['time'] = date('Y-m-d H:i:s',time());
     		$record->add($dataR);
     		$this->success('付款成功');
@@ -51,6 +52,7 @@ class StudentController extends Controller {
 		$user->where('cardnum='.$cardnum)->save($dataU);
 		$dataR['uid'] = session('id');
 		$dataR['money'] = $money;
+		$dataR['rest'] = $Up;
 		$dataR['time'] = date('Y-m-d H:i:s',time());
 		$record->add($dataR);
 		$this->success('充值成功');
@@ -58,9 +60,32 @@ class StudentController extends Controller {
     public function record(){
     	$record = M('record');
     	$mapR['uid'] = session('id');
-    	$rList = $record->where($mapR)->order('time desc')->select();
+    	$count = $record->where($mapR)->count();
+        $Page = new \Think\Page($count,5);
+        $show = $Page->show();
+    	$rList = $record->where($mapR)->order('time desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+    	$this->assign('page',$show);
     	$this->assign('rList',$rList);
     	$this->display();
+    }
+    public function draw(){
+    	$record = M('record');
+    	$mapR['uid'] = session('id');
+    	$rList = $record->where($mapR)->order('time')->select();
+    	$dataArr = [];
+    	for ($i=0; $i < count($rList); $i++) { 
+    		$dataArr['list'][$i] = $rList[$i]['time'];
+    		if($rList[$i]['money'] > 0){
+    			$dataArr['up'][$i] = $rList[$i]['money'];
+    			$dataArr['down'][$i] = '-';
+    			$dataArr['baseline'][$i] = $rList[$i-1]['rest']?$rList[$i-1]['rest']:0;
+    		}else{
+    			$dataArr['up'][$i] = '-';
+    			$dataArr['down'][$i] = -$rList[$i]['money'];
+    			$dataArr['baseline'][$i] = $rList[$i]['rest'];
+    		}
+    	}
+    	$this->ajaxReturn($dataArr);
     }
 
 

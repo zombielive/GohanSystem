@@ -83,7 +83,7 @@ $(function () {
 						lock = 1;
 					}else{
 						alert(data.info);
-						window.location.href = '/GohanSystem/index.php/Home/Student';
+						window.location.href = '/GohanSystem/index.php/Home/Student/record';
 					}
 				}
 			});

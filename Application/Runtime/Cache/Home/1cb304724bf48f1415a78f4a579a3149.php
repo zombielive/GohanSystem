@@ -67,7 +67,7 @@
 					}else{
 						alert(data.info);
 						lock = 1;
-						window.location.href = '/GohanSystem/index.php/Home/Student';
+						window.location.href = '/GohanSystem/index.php/Home/Student/record';
 					}
 				}
 			});
